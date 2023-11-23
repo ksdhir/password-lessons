@@ -32,10 +32,11 @@ echo
 USERID=$(echo "$CRED" | base64 -d | cut -f 1 -d ':')
 PASSWORD=$(echo "$CRED" | base64 -d | cut -f 2 -d ':')
 
-MATCH=$(grep "$USERID:$PASSWORD" passwd_plain.txt)
+SHAPASS=$(echo -n "$PASSWORD" | sha256sum | awk '{print $1}')
+MATCH=$(grep "$USERID:$SHAPASS" passwd_sha.txt)
 
 
-if  [[ "$MATCH" != "$USERID:$PASSWORD" ]]; then
+if  [[ "$MATCH" != "$USERID:$SHAPASS" ]]; then
     echo "status: 401"
     echo "WWW-Authenticate: Basic realm=\"Please provide valid user id and password\""
     echo
